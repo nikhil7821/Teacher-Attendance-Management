@@ -60,42 +60,62 @@
         </div>
     </div>
 
-    <script>
-        // SINGLE handleLogin function that uses auth.js
-        function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            console.log('Login attempt for username:', username);
-            
-            // Call the login function from auth.js
-            if (login(username, password)) {
-                // Login successful - redirect handled in auth.js
-                console.log('Login successful, redirecting...');
-            } else {
-                alert('Invalid credentials! Please check your username and password.');
-            }
-        }
-        
-        // Check if already logged in
-        if (sessionStorage.getItem('isLoggedIn') === 'true') {
-            const user = JSON.parse(sessionStorage.getItem('user'));
-            if (user && user.role === 'admin') {
-                window.location.href = 'dashboard.html';
-            } else if (user) {
-                window.location.href = 'attendance.html';
-            }
+<script>
+    // SINGLE handleLogin function that uses static + auth.js dynamic login
+    function handleLogin(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        console.log('Login attempt for username:', username);
+
+        // ✅ 1. STATIC LOGIN (Hardcoded Admin)
+        if (username === "maya@gmail.com" && password === "maya123") {
+
+            const staticUser = {
+                username: "maya@gmail.com",
+                role: "admin"
+            };
+
+            // Store session
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('user', JSON.stringify(staticUser));
+
+            console.log('Static admin login successful');
+
+            // Redirect to admin dashboard
+            window.location.href = 'dashboard.html';
+            return;
         }
 
-        // Add debug function to check users from console
-        window.checkLoginUsers = function() {
-            if (typeof getAllUsers === 'function') {
-                console.log('Users in system:', getAllUsers());
-            } else {
-                console.log('Users in localStorage:', JSON.parse(localStorage.getItem('users')));
-            }
-        };
-    </script>
+        // ✅ 2. DYNAMIC LOGIN (auth.js)
+        if (typeof login === "function" && login(username, password)) {
+            console.log('Dynamic login successful, redirect handled in auth.js');
+        } else {
+            alert('Invalid credentials! Please check your username and password.');
+        }
+    }
+
+    // ✅ Check if already logged in
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+
+        if (user && user.role === 'admin') {
+            window.location.href = 'dashboard.html';
+        } else if (user) {
+            window.location.href = 'attendance.html';
+        }
+    }
+
+    // ✅ Debug function to check users from console
+    window.checkLoginUsers = function() {
+        if (typeof getAllUsers === 'function') {
+            console.log('Users in system:', getAllUsers());
+        } else {
+            console.log('Users in localStorage:', JSON.parse(localStorage.getItem('users')));
+        }
+    };
+</script>
 </body>
 </html>
