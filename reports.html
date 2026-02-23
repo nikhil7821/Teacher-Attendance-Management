@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports • Attendance System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-zinc-100">
+    <script src="shared.js"></script>
+    
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white border-r border-zinc-200 flex flex-col transition-all duration-300 w-64">
+            <div class="px-6 py-8 border-b border-zinc-100 flex items-center justify-between">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-8 h-8 bg-violet-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shrink-0">A</div>
+                    <span class="text-2xl font-semibold text-zinc-900 whitespace-nowrap sidebar-label">Academia</span>
+                </div>
+                <button id="mobile-close-sidebar" class="lg:hidden text-zinc-500 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto">
+                <nav class="space-y-1">
+                    <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+                        <i class="fas fa-home w-5"></i> <span class="sidebar-label">Dashboard</span>
+                    </a>
+                    <a href="attendance.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+                        <i class="fas fa-calendar-check w-5"></i> <span class="sidebar-label">Attendance</span>
+                    </a>
+                    <a href="teachers.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+                        <i class="fas fa-chalkboard-teacher w-5"></i> <span class="sidebar-label">Teachers</span>
+                    </a>
+                    <a href="add-staff.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+                        <i class="fas fa-user-plus w-5"></i> <span class="sidebar-label">Add Staff</span>
+                    </a>
+                    <a href="reports.html" class="flex items-center gap-3 px-4 py-3 bg-violet-50 text-violet-700 rounded-2xl font-semibold">
+                        <i class="fas fa-chart-bar w-5"></i> <span class="sidebar-label">Reports</span>
+                    </a>
+                    <hr class="my-4 border-zinc-200">
+                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-2xl font-medium">
+                        <i class="fas fa-sign-out-alt w-5"></i> <span class="sidebar-label">Logout</span>
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white border-b border-zinc-200 px-8 py-5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-4">
+                    <button id="sidebar-toggle" class="text-2xl text-zinc-500 hover:text-zinc-700 lg:block hidden"><i class="fas fa-bars"></i></button>
+                    <button id="mobile-menu-btn" class="text-2xl text-zinc-500 lg:hidden"><i class="fas fa-bars"></i></button>
+                    <div class="flex items-center text-sm text-zinc-500">
+                        <span class="hover:text-zinc-700 cursor-pointer" onclick="window.location='dashboard.html'">Dashboard</span>
+                        <span class="mx-2">›</span>
+                        <span class="font-medium text-zinc-900">Reports</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center bg-zinc-100 rounded-3xl px-4 py-2 text-sm">
+                        <i class="fas fa-calendar-day mr-2 text-zinc-400"></i>
+                        <span id="header-date" class="font-medium text-zinc-700"></span>
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="profileDropdownBtn" class="flex items-center gap-3 focus:outline-none">
+                            <div class="text-right hidden sm:block">
+                                <div class="font-semibold text-sm" id="header-name">Loading...</div>
+                                <div class="text-xs text-zinc-500" id="header-role">Admin</div>
+                            </div>
+                            <div class="w-10 h-10 bg-violet-200 rounded-2xl overflow-hidden">
+                                <img id="header-avatar" src="" alt="" class="w-full h-full object-cover">
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-zinc-400"></i>
+                        </button>
+                        
+                        <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-zinc-100 z-50">
+                            <a href="profile.html" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-50 rounded-t-2xl"><i class="fas fa-user w-5 text-violet-600"></i> Profile</a>
+                            <a href="#" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-50"><i class="fas fa-cog w-5 text-zinc-600"></i> Settings</a>
+                            <hr class="border-zinc-100">
+                            <button onclick="logout()" class="w-full text-left flex items-center gap-3 px-5 py-4 hover:bg-red-50 rounded-b-2xl text-red-600"><i class="fas fa-sign-out-alt w-5"></i> Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="max-w-7xl mx-auto space-y-8">
+                    <!-- Report Controls -->
+                    <div class="bg-white rounded-3xl shadow-sm p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 mb-2">Report Type</label>
+                                <select id="reportType" class="w-full border border-zinc-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-violet-400">
+                                    <option value="daily">Daily Report</option>
+                                    <option value="weekly">Weekly Summary</option>
+                                    <option value="monthly">Monthly Report</option>
+                                    <option value="yearly">Yearly Overview</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 mb-2">From Date</label>
+                                <input type="date" id="fromDate" class="w-full border border-zinc-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-violet-400">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-700 mb-2">To Date</label>
+                                <input type="date" id="toDate" class="w-full border border-zinc-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-violet-400">
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="generateReport()" class="w-full bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-2xl font-medium flex items-center justify-center gap-2">
+                                    <i class="fas fa-download"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white rounded-3xl p-6 shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-violet-100 text-violet-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-users"></i></div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="stat-total-teachers">0</div>
+                                    <div class="text-zinc-500 text-sm">Total Teachers</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-6 shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-check-circle"></i></div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="stat-avg-present">0%</div>
+                                    <div class="text-zinc-500 text-sm">Avg. Present</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-6 shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-clock"></i></div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="stat-total-late">0</div>
+                                    <div class="text-zinc-500 text-sm">Late Arrivals</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-6 shadow-sm">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-calendar-alt"></i></div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="stat-working-days">0</div>
+                                    <div class="text-zinc-500 text-sm">Working Days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="bg-white rounded-3xl p-6 shadow-sm">
+                        <h3 class="font-semibold text-lg mb-4">Attendance Trend</h3>
+                        <canvas id="reportChart" height="300"></canvas>
+                    </div>
+
+                    <!-- Detailed Report Table -->
+                    <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+                        <div class="px-8 py-6 border-b border-zinc-100 flex justify-between items-center">
+                            <h3 class="font-semibold text-lg">Detailed Report</h3>
+                            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="bg-zinc-50 text-zinc-500 text-xs font-medium uppercase tracking-widest">
+                                        <th class="text-left px-8 py-5">Date</th>
+                                        <th class="text-center px-4 py-5">Present</th>
+                                        <th class="text-center px-4 py-5">Absent</th>
+                                        <th class="text-center px-4 py-5">Leave</th>
+                                        <th class="text-center px-4 py-5">Late</th>
+                                        <th class="text-center px-4 py-5">Half Day</th>
+                                        <th class="text-center px-4 py-5">Attendance %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-tbody" class="text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        checkAuth();
+        
+        let reportChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updateHeaderInfo();
+            setupDateDefaults();
+            updateStatistics();
+            renderReportTable();
+            setupChart();
+            setupSidebar();
+            setupDropdown();
+        });
+        
+        function updateHeaderInfo() {
+            const admin = appData.data.admin;
+            document.getElementById('header-name').innerText = admin.name || 'Admin User';
+            document.getElementById('header-role').innerText = admin.role || 'Admin';
+            document.getElementById('header-avatar').src = admin.avatar || 'https://i.pravatar.cc/128?u=admin';
+            document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-IN', { 
+                weekday: 'long', month: 'short', day: 'numeric' 
+            });
+        }
+        
+        function setupDateDefaults() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('fromDate').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('toDate').value = lastDay.toISOString().split('T')[0];
+        }
+        
+        function updateStatistics() {
+            document.getElementById('stat-total-teachers').innerText = appData.data.teachers.length;
+            
+            // Calculate average attendance
+            let totalPresent = 0;
+            let totalDays = 0;
+            
+            appData.data.attendanceHistory.forEach(record => {
+                totalPresent += record.present || 0;
+                totalDays++;
+            });
+            
+            const avgPresent = totalDays > 0 ? Math.round((totalPresent / (appData.data.teachers.length * totalDays)) * 100) : 0;
+            document.getElementById('stat-avg-present').innerText = avgPresent + '%';
+            
+            // Total late arrivals
+            const totalLate = appData.data.attendanceHistory.reduce((sum, r) => sum + (r.late || 0), 0);
+            document.getElementById('stat-total-late').innerText = totalLate;
+            
+            document.getElementById('stat-working-days').innerText = appData.data.attendanceHistory.length;
+        }
+        
+        function setupChart() {
+            const ctx = document.getElementById('reportChart').getContext('2d');
+            
+            const labels = appData.data.attendanceHistory.slice(0, 10).map(r => formatDate(r.date)).reverse();
+            const presentData = appData.data.attendanceHistory.slice(0, 10).map(r => r.present).reverse();
+            const absentData = appData.data.attendanceHistory.slice(0, 10).map(r => r.absent).reverse();
+            
+            reportChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Present',
+                            data: presentData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Absent',
+                            data: absentData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderReportTable() {
+            const tbody = document.getElementById('report-tbody');
+            tbody.innerHTML = '';
+            
+            appData.data.attendanceHistory.forEach(record => {
+                const attendancePercent = Math.round((record.present / record.total) * 100);
+                
+                const row = document.createElement('tr');
+                row.className = 'border-b border-zinc-100 last:border-0 hover:bg-zinc-50';
+                row.innerHTML = `
+                    <td class="px-8 py-4 font-medium">${formatDate(record.date)}</td>
+                    <td class="px-4 py-4 text-center">${record.present}</td>
+                    <td class="px-4 py-4 text-center">${record.absent || 0}</td>
+                    <td class="px-4 py-4 text-center">${record.leave || 0}</td>
+                    <td class="px-4 py-4 text-center">${record.late || 0}</td>
+                    <td class="px-4 py-4 text-center">${record.halfDay || 0}</td>
+                    <td class="px-4 py-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium ${attendancePercent >= 75 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                            ${attendancePercent}%
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function generateReport() {
+            const type = document.getElementById('reportType').value;
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            
+            // Filter data based on date range
+            const filteredHistory = appData.data.attendanceHistory.filter(record => {
+                return record.date >= fromDate && record.date <= toDate;
+            });
+            
+            // Update chart
+            const labels = filteredHistory.map(r => formatDate(r.date)).reverse();
+            const presentData = filteredHistory.map(r => r.present).reverse();
+            const absentData = filteredHistory.map(r => r.absent).reverse();
+            
+            reportChart.data.labels = labels;
+            reportChart.data.datasets[0].data = presentData;
+            reportChart.data.datasets[1].data = absentData;
+            reportChart.update();
+            
+            // Update table
+            const tbody = document.getElementById('report-tbody');
+            tbody.innerHTML = '';
+            
+            filteredHistory.forEach(record => {
+                const attendancePercent = Math.round((record.present / record.total) * 100);
+                
+                const row = document.createElement('tr');
+                row.className = 'border-b border-zinc-100 last:border-0 hover:bg-zinc-50';
+                row.innerHTML = `
+                    <td class="px-8 py-4 font-medium">${formatDate(record.date)}</td>
+                    <td class="px-4 py-4 text-center">${record.present}</td>
+                    <td class="px-4 py-4 text-center">${record.absent || 0}</td>
+                    <td class="px-4 py-4 text-center">${record.leave || 0}</td>
+                    <td class="px-4 py-4 text-center">${record.late || 0}</td>
+                    <td class="px-4 py-4 text-center">${record.halfDay || 0}</td>
+                    <td class="px-4 py-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium ${attendancePercent >= 75 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                            ${attendancePercent}%
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            showToast(`Report generated for ${formatDate(fromDate)} - ${formatDate(toDate)}`);
+        }
+        
+        function exportToExcel() {
+            // In real app, generate CSV/Excel file
+            showToast('Report exported successfully');
+        }
+        
+        // Sidebar and dropdown functions (reuse)
+        function setupSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileClose = document.getElementById('mobile-close-sidebar');
+            
+            toggleBtn?.addEventListener('click', () => {
+                sidebar.classList.toggle('w-64');
+                sidebar.classList.toggle('w-20');
+                document.querySelectorAll('.sidebar-label').forEach(label => {
+                    label.classList.toggle('lg:hidden');
+                });
+            });
+            
+            mobileBtn?.addEventListener('click', () => {
+                sidebar.classList.remove('hidden');
+            });
+            
+            mobileClose?.addEventListener('click', () => {
+                sidebar.classList.add('hidden');
+            });
+        }
+        
+        function setupDropdown() {
+            const dropdownBtn = document.getElementById('profileDropdownBtn');
+            const dropdown = document.getElementById('profileDropdown');
+            
+            dropdownBtn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!dropdownBtn?.contains(e.target)) {
+                    dropdown?.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

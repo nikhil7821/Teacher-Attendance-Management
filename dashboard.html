@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard • Attendance System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="auth.js"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+    
+    /* Admin-only elements - controlled by JavaScript, no display property here */
+    .admin-only {
+        /* No display property - let JS handle it */
+    }
+    
+    /* Page specific styles */
+    .form-section { transition: all 0.2s ease; }
+    .error-input { border-color: #ef4444 !important; }
+    .error-message { color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; }
+    .table-row:hover { background-color: #f8fafc; }
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .sidebar-transition { transition: width 0.3s ease; }
+    .animate-slide-up { animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Collapsed sidebar styles */
+    .sidebar-collapsed { width: 5rem !important; }
+    .sidebar-collapsed .sidebar-label { display: none !important; }
+    .sidebar-collapsed .border-b { justify-content: center; }
+    .sidebar-collapsed .flex.justify-between { justify-content: center; }
+</style>
+</head>
+<body class="bg-zinc-100">
+    <!-- Include shared JS -->
+    <script src="shared.js"></script>
+    
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white border-r border-zinc-200 flex flex-col sidebar-transition w-64 lg:w-64 fixed lg:relative h-full z-50 lg:z-auto transform -translate-x-full lg:translate-x-0">
+            <div class="px-6 py-8 border-b border-zinc-100 flex items-center justify-between">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-8 h-8 bg-violet-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shrink-0">A</div>
+                    <span class="text-2xl font-semibold text-zinc-900 whitespace-nowrap sidebar-label">Academia</span>
+                </div>
+                <button id="mobile-close-sidebar" class="lg:hidden text-zinc-500 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto">
+<nav class="space-y-1">
+    <!-- Dashboard - Admin Only -->
+    <a href="dashboard.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+        <i class="fas fa-home w-5"></i> <span class="sidebar-label">Dashboard</span>
+    </a>
+    
+    <!-- Attendance - Everyone can see -->
+    <a href="attendance.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+        <i class="fas fa-calendar-check w-5"></i> <span class="sidebar-label">Attendance</span>
+    </a>
+    
+    <!-- Teachers - Admin Only -->
+    <a href="teachers.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+        <i class="fas fa-chalkboard-teacher w-5"></i> <span class="sidebar-label">Teachers</span>
+    </a>
+    
+    <!-- Add Staff - Admin Only -->
+    <a href="add-staff.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+        <i class="fas fa-user-plus w-5"></i> <span class="sidebar-label">Add Staff</span>
+    </a>
+    
+    <!-- Reports - Admin Only -->
+    <a href="reports.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+        <i class="fas fa-chart-bar w-5"></i> <span class="sidebar-label">Reports</span>
+    </a>
+    
+    <hr class="my-4 border-zinc-200">
+    
+    <!-- Logout - Everyone can see -->
+    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-2xl font-medium">
+        <i class="fas fa-sign-out-alt w-5"></i> <span class="sidebar-label">Logout</span>
+    </button>
+</nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white border-b border-zinc-200 px-4 sm:px-8 py-5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-4">
+                    <button id="sidebar-toggle" class="text-2xl text-zinc-500 hover:text-zinc-700">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="flex items-center text-sm text-zinc-500 hidden sm:block">
+                        <span class="font-medium text-zinc-900">Dashboard</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <div class="hidden sm:flex items-center bg-zinc-100 rounded-3xl px-4 py-2 text-sm">
+                        <i class="fas fa-calendar-day mr-2 text-zinc-400"></i>
+                        <span id="header-date" class="font-medium text-zinc-700"></span>
+                    </div>
+                    
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button id="profileDropdownBtn" class="flex items-center gap-2 sm:gap-3 focus:outline-none">
+                            <div class="text-right hidden sm:block">
+                                <div class="font-semibold text-sm" id="header-name">Loading...</div>
+                                <div class="text-xs text-zinc-500" id="header-role">Admin</div>
+                            </div>
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 bg-violet-200 rounded-2xl overflow-hidden">
+                                <img id="header-avatar" src="https://i.pravatar.cc/128?u=admin" alt="" class="w-full h-full object-cover">
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-zinc-400 hidden sm:block"></i>
+                        </button>
+                        
+                        <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-zinc-100 z-50">
+                            <a href="profile.html" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-50 rounded-t-2xl">
+                                <i class="fas fa-user w-5 text-violet-600"></i> Profile
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-50">
+                                <i class="fas fa-cog w-5 text-zinc-600"></i> Settings
+                            </a>
+                            <hr class="border-zinc-100">
+                            <button onclick="logout()" class="w-full text-left flex items-center gap-3 px-5 py-4 hover:bg-red-50 rounded-b-2xl text-red-600">
+                                <i class="fas fa-sign-out-alt w-5"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="flex-1 overflow-y-auto p-6 sm:p-8">
+                <div class="max-w-7xl mx-auto space-y-8">
+                    <!-- Welcome Section -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800">Dashboard Overview</h1>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="attendance.html" class="bg-violet-600 hover:bg-violet-700 text-white px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2">
+                                <i class="fas fa-calendar-check"></i> Mark Attendance
+                            </a>
+                            <a href="add-staff.html" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2">
+                                <i class="fas fa-user-plus"></i> Add Staff
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 sm:gap-6">
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-emerald-100">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-emerald-600 text-3xl sm:text-4xl font-bold" id="stat-present">0</div>
+                                    <div class="text-zinc-500 text-sm mt-1">Present</div>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">✅</div>
+                            </div>
+                        </div>
+                        <!-- similar blocks for absent, leave, late, half, total ... (kept same, just reduced padding on mobile) -->
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-red-100">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-red-600 text-3xl sm:text-4xl font-bold" id="stat-absent">0</div>
+                                    <div class="text-zinc-500 text-sm mt-1">Absent</div>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">❌</div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-amber-100">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-amber-600 text-3xl sm:text-4xl font-bold" id="stat-leave">0</div>
+                                    <div class="text-zinc-500 text-sm mt-1">On Leave</div>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">🏠</div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-orange-100">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-orange-600 text-3xl sm:text-4xl font-bold" id="stat-late">0</div>
+                                    <div class="text-zinc-500 text-sm mt-1">Late</div>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">⏰</div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-blue-100">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-blue-600 text-3xl sm:text-4xl font-bold" id="stat-half">0</div>
+                                    <div class="text-zinc-500 text-sm mt-1">Half Day</div>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">🌓</div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-violet-100">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-violet-600 text-3xl sm:text-4xl font-bold" id="stat-total">0</div>
+                                    <div class="text-zinc-500 text-sm mt-1">Total Staff</div>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-violet-100 text-violet-600 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl">👥</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid lg:grid-cols-2 gap-6 sm:gap-8">
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
+                            <h3 class="font-semibold text-lg mb-4">📊 Monthly Attendance Summary</h3>
+                            <div class="h-64 sm:h-72"><canvas id="barChart"></canvas></div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
+                            <h3 class="font-semibold text-lg mb-4">🥧 Today's Distribution</h3>
+                            <div class="h-64 sm:h-72"><canvas id="pieChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity & Quick Actions -->
+                    <div class="grid lg:grid-cols-3 gap-6 sm:gap-8">
+                        <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
+                            <h3 class="font-semibold text-lg mb-4">📋 Recent Activity</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[500px]">
+                                    <thead>
+                                        <tr class="text-zinc-500 text-xs font-medium uppercase tracking-wider">
+                                            <th class="text-left py-3">Teacher</th>
+                                            <th class="text-left">Action</th>
+                                            <th class="text-left">Time</th>
+                                            <th class="text-left">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activity-tbody" class="text-sm"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm">
+                            <h3 class="font-semibold text-lg mb-4">⚡ Quick Actions</h3>
+                            <div class="space-y-3">
+                                <a href="attendance.html" class="flex items-center gap-4 p-4 bg-zinc-50 rounded-2xl hover:bg-violet-50 transition group">
+                                    <div class="w-10 h-10 bg-violet-100 text-violet-600 rounded-xl flex items-center justify-center group-hover:bg-violet-200"><i class="fas fa-calendar-check"></i></div>
+                                    <div><div class="font-medium">Mark Attendance</div><div class="text-xs text-zinc-500">Update today's attendance</div></div>
+                                </a>
+                                <!-- other quick actions remain same -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── TEMPORARY FALLBACK DATA (remove when shared.js is working) ───
+
+        // At the very beginning of the script in dashboard.html
+// At the very beginning of the script in dashboard.html
+// Check admin access immediately
+if (!isAdmin()) {
+    window.location.href = 'attendance.html';
+} else {
+    checkAuth();
+}
+
+// Force sidebar to show immediately
+setTimeout(function() {
+    console.log('Forcing sidebar visibility');
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = 'flex';
+        el.classList.remove('hidden');
+    });
+}, 100);
+        window.appData = window.appData || {
+            data: {
+                admin: { name: "Prerna", role: "Admin", avatar: "https://i.pravatar.cc/128?u=prerna" },
+                teachers: [
+                    { name: "Amit Sharma", status: "Present" },
+                    { name: "Priya Patil", status: "Absent" },
+                    { name: "Rahul Deshmukh", status: "Late" },
+                    { name: "Sneha Jadhav", status: "Leave" },
+                    { name: "Vikram More", status: "Half Day" },
+                    { name: "Neha Raut", status: "Present" },
+                    { name: "Sachin Tendulkar", status: "Present" }
+                ],
+                activityLog: [
+                    { teacherName: "Amit Sharma", action: "Marked In", time: "09:02 AM", date: "Today" },
+                    { teacherName: "Priya Patil", action: "Marked Absent", time: "08:45 AM", date: "Today" },
+                    { teacherName: "Rahul Deshmukh", action: "Marked Late", time: "09:35 AM", date: "Today" }
+                ]
+            }
+        };
+
+        // Check authentication
+        if (typeof checkAuth === 'function') checkAuth();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // ─── HEADER ───
+            updateHeaderInfo();
+            updateDashboardStats();
+            renderActivityLog();
+            setupCharts();
+
+            // ─── SIDEBAR TOGGLE ───
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const mobileClose = document.getElementById('mobile-close-sidebar');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        // mobile: slide in/out
+                        sidebar.classList.toggle('-translate-x-full');
+                    } else {
+                        // desktop: collapse/expand width
+                        sidebar.classList.toggle('sidebar-collapsed');
+                    }
+                });
+            }
+
+            if (mobileClose) {
+                mobileClose.addEventListener('click', () => {
+                    sidebar.classList.add('-translate-x-full');
+                });
+            }
+
+            // ─── PROFILE DROPDOWN ───
+            const profileBtn = document.getElementById('profileDropdownBtn');
+            const profileMenu = document.getElementById('profileDropdown');
+
+            if (profileBtn && profileMenu) {
+                profileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    profileMenu.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+                        profileMenu.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Close mobile sidebar when clicking outside
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 1024 &&
+                    !sidebar.contains(e.target) &&
+                    !toggleBtn.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+        });
+
+        function updateHeaderInfo() {
+            const admin = appData?.data?.admin || {};
+            document.getElementById('header-name').innerText = admin.name || 'Admin User';
+            document.getElementById('header-role').innerText = admin.role || 'Admin';
+            document.getElementById('header-avatar').src = admin.avatar || 'https://i.pravatar.cc/128?u=admin';
+            document.getElementById('header-date').innerText = new Date().toLocaleDateString('en-IN', { 
+                weekday: 'long', month: 'short', day: 'numeric' 
+            });
+        }
+
+        function updateDashboardStats() {
+            let present = 0, absent = 0, leave = 0, late = 0, half = 0;
+            const teachers = appData?.data?.teachers || [];
+            
+            teachers.forEach(t => {
+                const status = (t.status || '').trim();
+                if (status === 'Present') present++;
+                else if (status === 'Absent') absent++;
+                else if (status === 'Leave') leave++;
+                else if (status === 'Late') late++;
+                else if (status === 'Half Day') half++;
+            });
+
+            document.getElementById('stat-present').innerText = present;
+            document.getElementById('stat-absent').innerText = absent;
+            document.getElementById('stat-leave').innerText = leave;
+            document.getElementById('stat-late').innerText = late;
+            document.getElementById('stat-half').innerText = half;
+            document.getElementById('stat-total').innerText = teachers.length;
+
+            if (window.barChart && window.pieChart) {
+                updateCharts(present, absent, leave, late, half);
+            }
+        }
+
+        let barChart, pieChart;
+
+        function setupCharts() {
+            const stats = getCurrentStats();
+
+            const barCtx = document.getElementById('barChart')?.getContext('2d');
+            if (barCtx) {
+                barChart = new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Present', 'Absent', 'Leave', 'Late', 'Half Day'],
+                        datasets: [{
+                            label: "Today's Attendance",
+                            data: [stats.present, stats.absent, stats.leave, stats.late, stats.half],
+                            backgroundColor: ['#10b981', '#ef4444', '#f59e0b', '#f97316', '#3b82f6'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            const pieCtx = document.getElementById('pieChart')?.getContext('2d');
+            if (pieCtx) {
+                pieChart = new Chart(pieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Present', 'Absent', 'Leave', 'Late', 'Half Day'],
+                        datasets: [{
+                            data: [stats.present, stats.absent, stats.leave, stats.late, stats.half],
+                            backgroundColor: ['#10b981', '#ef4444', '#f59e0b', '#f97316', '#3b82f6']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            window.barChart = barChart;
+            window.pieChart = pieChart;
+        }
+
+        function getCurrentStats() {
+            let present = 0, absent = 0, leave = 0, late = 0, half = 0;
+            (appData?.data?.teachers || []).forEach(t => {
+                const s = (t.status || '').trim();
+                if (s === 'Present') present++;
+                else if (s === 'Absent') absent++;
+                else if (s === 'Leave') leave++;
+                else if (s === 'Late') late++;
+                else if (s === 'Half Day') half++;
+            });
+            return { present, absent, leave, late, half };
+        }
+
+        function updateCharts(p, a, l, lt, h) {
+            if (barChart) {
+                barChart.data.datasets[0].data = [p, a, l, lt, h];
+                barChart.update();
+            }
+            if (pieChart) {
+                pieChart.data.datasets[0].data = [p, a, l, lt, h];
+                pieChart.update();
+            }
+        }
+
+        function renderActivityLog() {
+            const tbody = document.getElementById('activity-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (appData?.data?.activityLog || []).slice(0, 8).forEach(log => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-zinc-100 last:border-0 hover:bg-zinc-50';
+                row.innerHTML = `
+                    <td class="py-3 pl-2">
+                        <div class="font-medium">${log.teacherName || 'Unknown'}</div>
+                    </td>
+                    <td class="py-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium 
+                            ${log.action?.includes('In') ? 'bg-emerald-100 text-emerald-700' : 
+                              log.action?.includes('Late') ? 'bg-orange-100 text-orange-700' : 
+                              'bg-blue-100 text-blue-700'}">
+                            ${log.action || '—'}
+                        </span>
+                    </td>
+                    <td class="py-3 text-zinc-600">${log.time || '—'}</td>
+                    <td class="py-3 text-zinc-600">${log.date || '—'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
