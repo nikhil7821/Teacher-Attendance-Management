@@ -25,7 +25,7 @@
         /* No display property - let JS handle it */
     }
     
-    /* Print styles for salary slip */
+    /* Print styles for salary slip - Home Bakery style */
     @media print {
       body * {
         visibility: hidden;
@@ -39,19 +39,100 @@
         top: 0;
         width: 100%;
         background: white;
-        padding: 20px;
+        padding: 30px;
+        font-family: 'Inter', sans-serif;
       }
       .no-print {
         display: none !important;
       }
+      .others-input {
+        display: none !important;
+      }
+      .others-print-value {
+        display: inline !important;
+        font-weight: normal;
+      }
+      .print-btn, .close-btn {
+        display: none !important;
+      }
     }
     
-    /* Salary slip specific styles */
+    /* Salary slip specific styles - Home Bakery theme */
     .salary-slip-table { width: 100%; border-collapse: collapse; }
-    .salary-slip-table td { border: 1px solid #ddd; padding: 8px 12px; }
+    .salary-slip-table td { border: 1px solid #ddd; padding: 10px 15px; }
     .label-column { width: 40%; background-color: #f9f9f9; font-weight: 600; }
     .currency-column { text-align: right; }
     .separator { height: 15px; }
+    .section-header { background: #8B2635; color: white; font-weight: bold; padding: 10px; margin-top: 20px; border-radius: 5px 5px 0 0; }
+    .total-row { background: #f0f0f0; font-weight: bold; }
+    .others-input {
+      width: 120px;
+      padding: 6px;
+      border: 1px solid #8B2635;
+      border-radius: 6px;
+      text-align: right;
+      font-weight: 500;
+    }
+    .others-input:focus {
+      outline: none;
+      border-color: #6d1e2a;
+      box-shadow: 0 0 0 2px rgba(139, 38, 53, 0.2);
+    }
+    .others-print-value {
+      display: none;
+    }
+    .company-header {
+      border-bottom: 3px solid #8B2635;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+    }
+    .company-logo-box {
+      width: 110px;
+      height: 108px;
+      background: #f0f0f0;
+      border: 2px solid #8B2635;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .print-btn {
+      background-color: #8B2635;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    .print-btn:hover {
+      background-color: #6d1e2a;
+    }
+    .close-btn {
+      background-color: #6c757d;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin-left: 10px;
+      transition: background-color 0.3s;
+    }
+    .close-btn:hover {
+      background-color: #5a6268;
+    }
+    .net-salary-row {
+      background: #8B2635;
+      color: white;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body class="bg-zinc-100">
@@ -91,9 +172,9 @@
           </a>
           
           <!-- Reports - Admin Only -->
-          <a href="reports.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+          <!-- <a href="reports.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
             <i class="fas fa-chart-bar w-5"></i> <span class="sidebar-label">Reports</span>
-          </a>
+          </a> -->
           
           <hr class="my-4 border-zinc-200">
           
@@ -312,21 +393,23 @@
             </div>
           </div>
 
-          <!-- Salary Slip Modal (Updated with new salary code) -->
+          <!-- Salary Slip Modal - Home Bakery Style with Full Functionality -->
           <div id="salary-slip-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden overflow-auto py-8 px-4">
             <div class="bg-white rounded-3xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
-              <div class="sticky top-0 bg-white z-10 border-b px-8 py-6 flex items-center justify-between">
-                <h2 class="text-2xl font-bold">Teacher Salary Slip</h2>
+              <div class="sticky top-0 bg-white z-10 border-b px-8 py-6 flex items-center justify-between" style="border-bottom-color: #8B2635;">
+                <h2 class="text-2xl font-bold" style="color: #8B2635;">Attendance System - Salary Slip</h2>
                 <button onclick="closeSalarySlipModal()" class="text-zinc-500 hover:text-zinc-700 text-3xl">&times;</button>
               </div>
               <div id="salary-slip-content" class="p-8">
                 <!-- Salary slip will be dynamically inserted here -->
               </div>
-              <div class="sticky bottom-0 bg-white border-t px-8 py-6 flex justify-end gap-4">
-                <button onclick="printSalarySlip()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium flex items-center gap-2">
-                  <i class="fas fa-print"></i> Print Slip
+              <div class="sticky bottom-0 bg-white border-t px-8 py-6 flex justify-end gap-4" style="border-top-color: #8B2635;">
+                <button onclick="printSalarySlip()" class="print-btn" style="background-color: #8B2635; color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                  <i class="fas fa-print mr-2"></i> Print Salary Slip
                 </button>
-                <button onclick="closeSalarySlipModal()" class="bg-zinc-200 hover:bg-zinc-300 px-6 py-2.5 rounded-xl font-medium">Close</button>
+                <button onclick="closeSalarySlipModal()" class="close-btn" style="background-color: #6c757d; color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                  Close
+                </button>
               </div>
             </div>
           </div>
@@ -360,11 +443,9 @@ let attendanceHistory = [];
 let currentEditingId = null;
 let currentViewingTeacherId = null;
 
-// Payment entries for salary calculations
+// Payment entries for salary calculations (Home Bakery style)
 let paymentEntries = JSON.parse(localStorage.getItem('paymentEntries')) || [];
-function savePaymentEntriesToStorage() {
-    localStorage.setItem('paymentEntries', JSON.stringify(paymentEntries));
-}
+
 // ============= IST DATE HELPER FUNCTIONS =============
 // Helper function to get local date string (IST)
 function getLocalDateString() {
@@ -452,7 +533,7 @@ function saveTeachers(teachers) {
     }
 }
 
-// Save payment entries to storage
+// Save payment entries to storage (Home Bakery style)
 function savePaymentEntriesToStorage() {
     localStorage.setItem('paymentEntries', JSON.stringify(paymentEntries));
 }
@@ -518,7 +599,7 @@ function loadTeachers() {
 // Load teachers immediately
 loadTeachers();
 
-// Initialize salary data for teachers if not present
+// Initialize salary data for teachers if not present (Home Bakery style)
 function initializeSalaryData() {
     const teachersList = getTeachers();
     let updated = false;
@@ -526,17 +607,12 @@ function initializeSalaryData() {
     teachersList.forEach(teacher => {
         if (!teacher.basicSalary) {
             teacher.basicSalary = 35000;
-            teacher.hra = 12000;
-            teacher.da = 8000;
-            teacher.conveyance = 2000;
-            teacher.medical = 1250;
-            teacher.specialAllowance = 3000;
-            teacher.providentFund = 3800;
-            teacher.professionalTax = 200;
-            teacher.incomeTax = 2500;
             teacher.bankName = 'State Bank of India';
             teacher.accountNo = '****1234';
+            teacher.ifscCode = 'SBIN0012345';
             teacher.pan = 'ABCDE1234F';
+            teacher.uan = '123456789012';
+            teacher.esi = 'ESI123456';
             updated = true;
         }
     });
@@ -1503,7 +1579,7 @@ const dateStr = getLocalDateString();
     showToast(`Attendance report downloaded for ${teacher.name}`);
 }
 
-// ============= NEW SALARY SLIP FUNCTIONS =============
+// ============= HOME BAKERY SALARY SLIP FUNCTIONS WITH FULL FUNCTIONALITY =============
 function showSalarySlip() {
     if (!isAdminUser) return;
     
@@ -1531,8 +1607,8 @@ function showSalarySlip() {
     // Close the attendance modal
     closeModal();
     
-    // Generate and show salary slip with new salary code
-    generateSalarySlipNew(teacher);
+    // Generate and show salary slip with Home Bakery style including Others field and print functionality
+    generateHomeBakerySalarySlip(teacher);
 }
 
 function calculateMonthlyAttendanceForSalary(teacher, year, month) {
@@ -1619,7 +1695,7 @@ function calculateSalaryComponents(teacher, attendance, paymentEntriesForMonth) 
         .filter(entry => entry.type === 'Advance')
         .reduce((sum, entry) => sum + entry.amount, 0);
     
-    const others = 0;
+    const others = 0; // Default value for others field (will be editable in the slip)
     
     // Final net salary calculation
     const netSalary = totalPayableSalary + bonus + incentive + others - advance;
@@ -1641,7 +1717,16 @@ function calculateSalaryComponents(teacher, attendance, paymentEntriesForMonth) 
     };
 }
 
-function generateSalarySlipNew(teacher) {
+function formatMonthYear(dateString) {
+    const [year, month] = dateString.split('-');
+    const monthNames = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
+}
+
+function generateHomeBakerySalarySlip(teacher) {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -1680,128 +1765,312 @@ function generateSalarySlipNew(teacher) {
         totalWorkingDays: attendance.totalWorkingDays
     };
     
-    const slipHTML = createSalarySlipHTML(slipData);
+    const slipHTML = createHomeBakerySalarySlipHTML(slipData);
     
     const salaryModal = document.getElementById('salary-slip-modal');
     const salaryContent = document.getElementById('salary-slip-content');
     salaryContent.innerHTML = slipHTML;
     salaryModal.classList.remove('hidden');
+    
+    // Add event listener for the others input field after it's added to DOM
+    setTimeout(() => {
+        const othersInput = document.getElementById('othersAmount');
+        if (othersInput) {
+            othersInput.addEventListener('input', function(e) {
+                let value = parseFloat(e.target.value) || 0;
+                if (value < 0) value = 0;
+                updateNetSalary(slipData, value);
+            });
+        }
+    }, 100);
 }
 
-function formatMonthYear(dateString) {
-    const [year, month] = dateString.split('-');
-    const monthNames = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
+function updateNetSalary(slipData, othersAmount) {
+    // Calculate final salary
+    const finalSalary = slipData.totalPayableSalary + 
+                       slipData.incentive + 
+                       slipData.bonus + 
+                       othersAmount - 
+                       slipData.advance;
+    
+    // Update display
+    const netSalaryDisplay = document.getElementById('netSalaryDisplay');
+    if (netSalaryDisplay) {
+        netSalaryDisplay.innerHTML = '₹ ' + Math.round(finalSalary).toLocaleString();
+    }
 }
 
-function createSalarySlipHTML(slipData) {
+function createHomeBakerySalarySlipHTML(slipData) {
     return `
-        <div id="salary-slip-print" class="bg-white rounded-2xl p-6">
-            <!-- Header -->
-            <div class="text-center border-b-2 border-violet-300 pb-6 mb-6">
-                <h1 class="text-3xl font-bold text-violet-800">ACADEMIA</h1>
-                <p class="text-zinc-600">Teacher Salary Slip - ${formatMonthYear(slipData.month)}</p>
-            </div>
-            
-            <!-- Teacher Info -->
-            <div class="grid grid-cols-2 gap-8 mb-8 p-4 bg-zinc-50 rounded-xl">
+        <div id="salary-slip-print" style="font-family: 'Inter', Arial, sans-serif; max-width: 800px; margin: 0 auto; background: white; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 12px;">
+            <!-- Home Bakery Header -->
+            <div style="display: flex; justify-content: space-between; align-items: start; border-bottom: 3px solid #8B2635; padding-bottom: 20px; margin-bottom: 25px;">
                 <div>
-                    <p><span class="font-semibold text-zinc-500">Teacher Name:</span> ${slipData.staffName}</p>
-                    <p><span class="font-semibold text-zinc-500">Employee ID:</span> ${slipData.employeeId}</p>
-                    <p><span class="font-semibold text-zinc-500">Department:</span> ${slipData.role}</p>
+                    <h1 style="color: #8B2635; font-size: 32px; margin: 0 0 8px 0; font-weight: 800;">Attendance System</h1>
+                    <p style="margin: 4px 0; font-size: 12px; color: #4a5568;">Kidzee Primary School, Dehu Gaon</p>
+                    <p style="margin: 4px 0; font-size: 12px; color: #4a5568;">Pune Maharashtra 411045.</p>
+                    <p style="margin: 4px 0; font-size: 12px; color: #4a5568;">Phone: +91 9537999898 | Email: kidzee.enquiry@gmail.com</p>
+                    <p style="margin: 4px 0; font-size: 12px; color: #4a5568;"><strong>Visit:</strong> https://kidzeeoune.com</p>
                 </div>
-                <div>
-                    <p><span class="font-semibold text-zinc-500">Bank Account:</span> ${slipData.bankAccount}</p>
-                    <p><span class="font-semibold text-zinc-500">Date of Joining:</span> ${slipData.dateOfJoining}</p>
-                    <p><span class="font-semibold text-zinc-500">Date of Issue:</span> ${slipData.dateOfIssue}</p>
+                <div style="width: 100px; height: 100px; background: #f7fafc; border: 2px solid #8B2635; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="" alt="Attendance System" style="width: 90%; height: 90%; object-fit: contain;">
                 </div>
             </div>
-            
-            <!-- Attendance Summary -->
-            <div class="section-header bg-violet-700 text-white font-bold p-3 rounded-t-xl">Attendance Summary</div>
-            <table class="salary-slip-table w-full border-collapse border border-zinc-300 mb-8">
-                <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Total Working Days</td>
-                    <td class="p-3">${slipData.totalWorkingDays}</td>
+
+            <!-- Title -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="font-size: 26px; color: #2d3748; margin: 0 0 8px 0; font-weight: 700;">Employee Salary Slip</h2>
+                <p style="font-size: 18px; color: #8B2635; margin: 0; font-weight: 500;">${formatMonthYear(slipData.month)}</p>
+            </div>
+
+            <!-- Employee Details Table -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                <tr style="background-color: #f8fafc;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; width: 40%; font-weight: 600; color: #2d3748;">Employee Name</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.staffName}</td>
                 </tr>
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Days Worked / Present</td>
-                    <td class="p-3">${slipData.daysWorkedPresent}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Employee ID</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.employeeId}</td>
+                </tr>
+                <tr style="background-color: #f8fafc;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; font-weight: 600; color: #2d3748;">Designation</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.role.charAt(0).toUpperCase() + slipData.role.slice(1)}</td>
                 </tr>
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Paid Leave / Weekly Off</td>
-                    <td class="p-3">${slipData.paidLeaveWeeklyOff}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Bank Account No.</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.bankAccount}</td>
+                </tr>
+                <tr style="background-color: #f8fafc;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; font-weight: 600; color: #2d3748;">Date of Joining</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.dateOfJoining}</td>
                 </tr>
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Unpaid Leave</td>
-                    <td class="p-3">${slipData.unpaidLeave}</td>
-                </tr>
-                <tr class="total-row bg-violet-100 font-bold">
-                    <td class="label-column p-3">Payable Days</td>
-                    <td class="p-3">${slipData.payableDays}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Date of Issue</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.dateOfIssue}</td>
                 </tr>
             </table>
-            
-            <!-- Salary Calculation -->
-            <div class="section-header bg-emerald-700 text-white font-bold p-3 rounded-t-xl">Salary Calculation</div>
-            <table class="salary-slip-table w-full border-collapse border border-zinc-300">
+
+            <!-- Attendance Summary Section -->
+            <div style="background: #8B2635; color: white; padding: 12px 15px; font-weight: 700; font-size: 18px; border-radius: 8px 8px 0 0; margin-top: 30px;">Attendance Summary</div>
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-top: none; margin-bottom: 30px;">
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Agreed Monthly Salary</td>
-                    <td class="currency-column p-3 text-right">₹ ${slipData.baseSalary.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Salary Per Day (30 days)</td>
-                    <td class="currency-column p-3 text-right">₹ ${slipData.dailyRate.toLocaleString()}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748; width: 40%;">Total Working Days</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.totalWorkingDays}</td>
                 </tr>
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Days Worked (Present)</td>
-                    <td class="currency-column p-3 text-right">${slipData.daysWorkedPresent}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Days Worked / Present</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.daysWorkedPresent}</td>
                 </tr>
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Basic Pay (₹${slipData.dailyRate} × ${slipData.daysWorkedPresent})</td>
-                    <td class="currency-column p-3 text-right">₹ ${slipData.basicPayableSalary.toLocaleString()}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Paid Leave / Weekly Off</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.paidLeaveWeeklyOff}</td>
                 </tr>
                 <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Paid Leave Days</td>
-                    <td class="currency-column p-3 text-right">${slipData.paidLeaveWeeklyOff}</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Unpaid Leave</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; color: #4a5568;">${slipData.unpaidLeave}</td>
                 </tr>
-                <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Leave Pay (₹${slipData.dailyRate} × ${slipData.paidLeaveWeeklyOff})</td>
-                    <td class="currency-column p-3 text-right">₹ ${(slipData.dailyRate * slipData.paidLeaveWeeklyOff).toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Total Payable Days (Present + Leave)</td>
-                    <td class="currency-column p-3 text-right">${slipData.payableDays}</td>
-                </tr>
-                <tr>
-                    <td class="label-column p-3 bg-zinc-50 font-semibold">Total Salary Payable (₹${slipData.dailyRate} × ${slipData.payableDays})</td>
-                    <td class="currency-column p-3 text-right">₹ ${slipData.totalPayableSalary.toLocaleString()}</td>
-                </tr>
-                <tr class="bg-green-50">
-                    <td class="label-column p-3 font-semibold">Incentives</td>
-                    <td class="currency-column p-3 text-right text-green-700">+ ₹ ${slipData.incentive.toLocaleString()}</td>
-                </tr>
-                <tr class="bg-green-50">
-                    <td class="label-column p-3 font-semibold">Bonus</td>
-                    <td class="currency-column p-3 text-right text-green-700">+ ₹ ${slipData.bonus.toLocaleString()}</td>
-                </tr>
-                <tr class="bg-red-50">
-                    <td class="label-column p-3 font-semibold">Salary Advance</td>
-                    <td class="currency-column p-3 text-right text-red-700">- ₹ ${slipData.advance.toLocaleString()}</td>
-                </tr>
-                <tr class="total-row bg-violet-700 text-white font-bold">
-                    <td class="label-column p-3">Net Salary Payable</td>
-                    <td class="currency-column p-3 text-right">₹ ${slipData.netSalary.toLocaleString()}</td>
+                <tr style="background-color: #f0f0f0; font-weight: 700;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 700; color: #2d3748;">Payable Days</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; font-weight: 700; color: #2d3748;">${slipData.payableDays}</td>
                 </tr>
             </table>
-            
+
+            <!-- Salary Calculation Section with Others Field -->
+            <div style="background: #8B2635; color: white; padding: 12px 15px; font-weight: 700; font-size: 18px; border-radius: 8px 8px 0 0; margin-top: 30px;">Salary Calculation</div>
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-top: none; margin-bottom: 30px;">
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748; width: 40%;">Agreed Monthly Salary</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; font-weight: 600; color: #2d3748;">₹ ${slipData.baseSalary.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Salary Per Day (30 days)</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #4a5568;">₹ ${slipData.dailyRate.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Days Worked (Present)</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #4a5568;">${slipData.daysWorkedPresent}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Basic Pay (₹${slipData.dailyRate} × ${slipData.daysWorkedPresent})</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; font-weight: 600; color: #2d3748;">₹ ${slipData.basicPayableSalary.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Paid Leave Days</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #4a5568;">${slipData.paidLeaveWeeklyOff}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Leave Pay (₹${slipData.dailyRate} × ${slipData.paidLeaveWeeklyOff})</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #4a5568;">₹ ${(slipData.dailyRate * slipData.paidLeaveWeeklyOff).toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Total Payable Days (Present + Leave)</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; font-weight: 600; color: #2d3748;">${slipData.payableDays}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Total Salary Payable (₹${slipData.dailyRate} × ${slipData.payableDays})</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; font-weight: 700; color: #2d3748; border-bottom: 2px solid #8B2635;">₹ ${slipData.totalPayableSalary.toLocaleString()}</td>
+                </tr>
+                <tr style="background-color: #e8f5e9;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Incentives</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #2e7d32; font-weight: 600;">+ ₹ ${slipData.incentive.toLocaleString()}</td>
+                </tr>
+                <tr style="background-color: #e8f5e9;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Bonus</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #2e7d32; font-weight: 600;">+ ₹ ${slipData.bonus.toLocaleString()}</td>
+                </tr>
+                <!-- Others Field with Input - Editable -->
+                <tr id="othersRow" style="background-color: #fff3e0;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Others (Additional Amount)</td>
+                    <td class="value-column" style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right;">
+                        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+                            <span style="color: #2d3748;">+ ₹</span>
+                            <input type="number" 
+                                   id="othersAmount" 
+                                   class="others-input"
+                                   min="0" 
+                                   step="100" 
+                                   value="0" 
+                                   style="width: 120px; padding: 6px 10px; border: 2px solid #8B2635; border-radius: 6px; text-align: right; font-weight: 500; font-size: 14px;">
+                            <span class="others-print-value" style="display: none; font-weight: 600; color: #2d3748;">+ ₹ 0</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="background-color: #ffebee;">
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-weight: 600; color: #2d3748;">Salary Advance</td>
+                    <td style="padding: 12px 15px; border: 1px solid #e2e8f0; text-align: right; color: #c62828; font-weight: 600;">- ₹ ${slipData.advance.toLocaleString()}</td>
+                </tr>
+                <tr style="background-color: #8B2635;">
+                    <td style="padding: 15px; border: 1px solid #8B2635; font-weight: 800; color: white; font-size: 16px;">Net Salary Payable</td>
+                    <td id="netSalaryDisplay" style="padding: 15px; border: 1px solid #8B2635; text-align: right; font-weight: 800; color: white; font-size: 18px;">₹ ${slipData.netSalary.toLocaleString()}</td>
+                </tr>
+            </table>
+
+            <!-- JavaScript for dynamic calculation with Others field and print functionality -->
+            <script>
+                (function() {
+                    // Store initial values
+                    const initialValues = {
+                        totalPayableSalary: ${slipData.totalPayableSalary},
+                        incentive: ${slipData.incentive},
+                        bonus: ${slipData.bonus},
+                        advance: ${slipData.advance}
+                    };
+
+                    function calculateFinalSalary() {
+                        // Get others amount from input
+                        const othersInput = document.getElementById('othersAmount');
+                        if (!othersInput) return;
+                        
+                        let othersAmount = parseFloat(othersInput.value) || 0;
+                        
+                        // Ensure positive value only
+                        if (othersAmount < 0) {
+                            othersAmount = 0;
+                            othersInput.value = 0;
+                        }
+                        
+                        // Calculate final salary
+                        const finalSalary = initialValues.totalPayableSalary + 
+                                          initialValues.incentive + 
+                                          initialValues.bonus + 
+                                          othersAmount - 
+                                          initialValues.advance;
+                        
+                        // Update display
+                        const netSalaryDisplay = document.getElementById('netSalaryDisplay');
+                        if (netSalaryDisplay) {
+                            netSalaryDisplay.innerHTML = '₹ ' + Math.round(finalSalary).toLocaleString();
+                        }
+                        
+                        // Update the print button text with new amount (if it exists)
+                        const printBtn = document.querySelector('.print-btn');
+                        if (printBtn) {
+                            printBtn.innerHTML = '<i class="fas fa-print mr-2"></i> Print Salary Slip (₹' + Math.round(finalSalary).toLocaleString() + ')';
+                        }
+                    }
+
+                    // Initialize calculation on load
+                    document.addEventListener('DOMContentLoaded', function() {
+                        calculateFinalSalary();
+                        
+                        // Add input validation and calculation
+                        const othersInput = document.getElementById('othersAmount');
+                        if (othersInput) {
+                            othersInput.addEventListener('input', function(e) {
+                                let value = parseFloat(e.target.value) || 0;
+                                if (value < 0) {
+                                    e.target.value = 0;
+                                }
+                                calculateFinalSalary();
+                            });
+                        }
+                    });
+
+                    // Override the window.print function to show calculated amount properly
+                    const originalPrint = window.print;
+                    window.print = function() {
+                        // Get others amount from input
+                        const othersInput = document.getElementById('othersAmount');
+                        const othersAmount = parseFloat(othersInput?.value) || 0;
+                        
+                        // Calculate final salary
+                        const finalSalary = initialValues.totalPayableSalary + 
+                                          initialValues.incentive + 
+                                          initialValues.bonus + 
+                                          othersAmount - 
+                                          initialValues.advance;
+                        
+                        // Update net salary display for print
+                        const netSalaryDisplay = document.getElementById('netSalaryDisplay');
+                        if (netSalaryDisplay) {
+                            netSalaryDisplay.innerHTML = '₹ ' + Math.round(finalSalary).toLocaleString();
+                        }
+                        
+                        // Hide input and show text for printing
+                        const othersRow = document.getElementById('othersRow');
+                        if (othersRow) {
+                            const valueColumn = othersRow.querySelector('.value-column');
+                            if (valueColumn) {
+                                const inputDiv = valueColumn.querySelector('div');
+                                const input = valueColumn.querySelector('input');
+                                const printSpan = valueColumn.querySelector('.others-print-value');
+                                const plusSpan = inputDiv.querySelector('span');
+                                
+                                if (input && inputDiv && printSpan && plusSpan) {
+                                    // Update print span with current value
+                                    printSpan.textContent = '+ ₹ ' + othersAmount.toLocaleString();
+                                    printSpan.style.display = 'inline';
+                                    
+                                    // Hide input elements for printing
+                                    input.style.display = 'none';
+                                    plusSpan.style.display = 'none';
+                                    
+                                    // Call original print
+                                    originalPrint.call(window);
+                                    
+                                    // Restore after printing
+                                    setTimeout(() => {
+                                        input.style.display = 'inline-block';
+                                        plusSpan.style.display = 'inline';
+                                        printSpan.style.display = 'none';
+                                        calculateFinalSalary();
+                                    }, 100);
+                                    return;
+                                }
+                            }
+                        }
+                        
+                        // If we couldn't find the elements, just print normally
+                        originalPrint.call(window);
+                    };
+                })();
+            <\/script>
+
             <!-- Footer -->
-            <div class="mt-8 pt-6 border-t text-sm text-zinc-500 flex justify-between">
-                <div>Generated on: ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                <div>Authorized Signatory</div>
+            <div style="text-align: center; font-size: 12px; color: #718096; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0;">
+                <p style="margin: 5px 0;"><strong>Note :</strong> This is system generated salary slip. No signature required.</p>
+                <p style="margin: 5px 0;"><strong>Contact Support :</strong> kidzee.enquiry@gmail.com | Phone: +91 9537999898</p>
             </div>
         </div>
     `;

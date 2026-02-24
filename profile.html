@@ -26,26 +26,43 @@
             </div>
             <div class="p-4 flex-1 overflow-y-auto">
                 <nav class="space-y-1">
-                    <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
-                        <i class="fas fa-home w-5"></i> <span class="sidebar-label">Dashboard</span>
-                    </a>
-                    <a href="attendance.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
-                        <i class="fas fa-calendar-check w-5"></i> <span class="sidebar-label">Attendance</span>
-                    </a>
-                    <a href="teachers.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
-                        <i class="fas fa-chalkboard-teacher w-5"></i> <span class="sidebar-label">Teachers</span>
-                    </a>
-                    <a href="add-staff.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
-                        <i class="fas fa-user-plus w-5"></i> <span class="sidebar-label">Add Staff</span>
-                    </a>
-                    <a href="reports.html" class="flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
-                        <i class="fas fa-chart-bar w-5"></i> <span class="sidebar-label">Reports</span>
-                    </a>
-                    <hr class="my-4 border-zinc-200">
-                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-2xl font-medium">
-                        <i class="fas fa-sign-out-alt w-5"></i> <span class="sidebar-label">Logout</span>
-                    </button>
-                </nav>
+          <!-- Dashboard - Admin Only -->
+          <a href="dashboard.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+            <i class="fas fa-home w-5"></i> <span class="sidebar-label">Dashboard</span>
+          </a>
+          
+          <!-- Attendance - Everyone can see -->
+          <a href="attendance.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+            <i class="fas fa-calendar-check w-5"></i> <span class="sidebar-label">Attendance</span>
+          </a>
+          
+          <!-- Teachers - Admin Only -->
+          <a href="teachers.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+            <i class="fas fa-chalkboard-teacher w-5"></i> <span class="sidebar-label">Teachers</span>
+          </a>
+          
+          <!-- Add Staff - Admin Only -->
+          <a href="add-staff.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+            <i class="fas fa-user-plus w-5"></i> <span class="sidebar-label">Add Staff</span>
+          </a>
+          
+          <!-- Reports - Admin Only -->
+          <!-- <a href="reports.html" class="admin-only flex items-center gap-3 px-4 py-3 text-zinc-700 hover:bg-zinc-100 rounded-2xl font-medium">
+            <i class="fas fa-chart-bar w-5"></i> <span class="sidebar-label">Reports</span>
+          </a> -->
+
+          <!-- Profile - Admin Only -->
+          <a href="profile.html" class="flex items-center gap-3 px-4 py-3 bg-violet-50 text-violet-700 rounded-2xl font-semibold">
+            <i class="fas fa-user-plus w-5"></i> <span class="sidebar-label">Profile</span>
+          </a>
+          
+          <hr class="my-4 border-zinc-200">
+          
+          <!-- Logout - Everyone can see -->
+          <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-2xl font-medium">
+            <i class="fas fa-sign-out-alt w-5"></i> <span class="sidebar-label">Logout</span>
+          </button>
+        </nav>
             </div>
         </aside>
 
